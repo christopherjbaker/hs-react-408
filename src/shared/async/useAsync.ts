@@ -1,6 +1,6 @@
 import { use, useCallback, useEffect, useRef, useState } from "react"
 
-export default function useAsync<Type>(
+export function useAsync<Type>(
   fn: (initial: boolean) => Promise<Type>,
   deps: unknown[] = [],
 ): [

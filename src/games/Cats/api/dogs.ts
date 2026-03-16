@@ -1,4 +1,4 @@
-import useAsync from "#shared/useAsync"
+import { useAsync } from "#shared/async"
 
 import { get } from "./api"
 

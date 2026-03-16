@@ -1,15 +1,19 @@
-import useAsync from "#shared/useAsync"
+import { useAsync } from "#shared/async"
 
 import { get } from "./api"
 
+/** A Cat object from Cat-aas. */
 export type Cat = {
   id: string
   tags: string[]
   created_at: Date
+  /** The URL to the image of the cat. */
   url: string
+  /** A mime type for an image. */
   mimetype: string
 }
 
+/** Fetches a random cat from Cat-aaS. */
 export async function getCat(success: boolean = true): Promise<Cat> {
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
@@ -18,9 +22,14 @@ export async function getCat(success: boolean = true): Promise<Cat> {
   return cat
 }
 
+/** Fetches a random cat from Cat-aaS. */
 export function useCat(): [
-  Cat | undefined,
+  (
+    /** Undefined if not yet available. */
+    Cat | undefined
+  ),
   {
+    /** Fetches a new random cat. */
     refresh: () => void
   },
 ] {

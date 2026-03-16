@@ -1,56 +1,41 @@
-import { Suspense } from "react"
-import { ErrorBoundary } from "react-error-boundary"
+import { Async } from "#shared/async"
 
-import { useCat, type Cat } from "../api"
+import { useCat } from "../api"
 
-const Wrapper: React.FC = () => {
-  return (
-    <>
-      <ErrorBoundary
-        fallbackRender={({ error, resetErrorBoundary }) => (
-          <>
-            <button onClick={() => resetErrorBoundary()}>Retry</button>
-            <div>{getErrorMessage(error)}</div>
-          </>
-        )}
-      >
-        <Suspense fallback={<PlayView />}>
-          <Play />
-        </Suspense>
-      </ErrorBoundary>
-    </>
-  )
-}
-
+/** Renders the Play interface. */
 const Play: React.FC = () => {
-  const [cat, { refresh }] = useCat()
-  if (!cat) return <PlayView />
-
-  return <PlayView cat={cat} refresh={refresh} />
-}
-
-const PlayView: React.FC<{ cat?: Cat; refresh?: () => void }> = ({
-  cat,
-  refresh,
-}) => {
   return (
-    <>
-      <div>
-        <button disabled={!refresh} onClick={() => refresh?.()}>
-          Get new Cat!
-        </button>
-      </div>
-
-      {cat ? (
-        <img src={cat.url} width="512" />
-      ) : (
-        <div style={{ width: "512px", height: "512px", background: "gray" }} />
+    <Async
+      useData={useCat}
+      renderError={({ error, resetErrorBoundary }) => (
+        <>
+          <button onClick={() => resetErrorBoundary()}>Retry</button>
+          <div>{getErrorMessage(error)}</div>
+        </>
       )}
-    </>
+      // @ts-expect-error TODO: Fix typescript
+      renderSuccess={([cat, { refresh } = {}] = []) => (
+        <>
+          <div>
+            <button disabled={!cat} onClick={() => refresh?.()}>
+              Get new Cat!
+            </button>
+          </div>
+
+          {cat ? (
+            <img src={cat.url} width="512" />
+          ) : (
+            <div
+              style={{ width: "512px", height: "512px", background: "gray" }}
+            />
+          )}
+        </>
+      )}
+    />
   )
 }
 
-export default Wrapper
+export default Play
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) {
